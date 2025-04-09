@@ -1,0 +1,132 @@
+/* 通用页面布局样式 */
+.page-container {
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* 通用页面标题样式 */
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  border-bottom: 1px solid var(--el-border-color-light);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+/* 通用分页样式 */
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pagination-container :deep(.el-pagination) {
+  justify-content: flex-end;
+  font-size: 14px;
+}
+
+.pagination-container :deep(.el-pagination .el-select .el-input) {
+  width: 110px !important;
+}
+
+.pagination-container :deep(.el-pagination .el-select .el-input__inner) {
+  padding-right: 25px !important;
+}
+
+.pagination-container :deep(.el-pagination button:not(:disabled)) {
+  background-color: transparent;
+  color: var(--el-text-color-primary);
+}
+
+.pagination-container :deep(.el-pagination .el-pager li:not(.is-disabled).is-active) {
+  background-color: var(--el-color-primary);
+}
+
+.pagination-container :deep(.el-pagination .el-pagination__total) {
+  margin-right: 16px;
+}
+
+.pagination-container :deep(.el-pagination .el-pagination__sizes) {
+  margin-right: 16px;
+}
+
+.pagination-container :deep(.el-pagination .el-pagination__jump) {
+  margin-left: 16px;
+}
+
+.pagination-container :deep(.el-pagination .btn-prev),
+.pagination-container :deep(.el-pagination .btn-next) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-container :deep(.el-pagination .el-icon) {
+  vertical-align: middle;
+  margin: 0 4px;
+}
+
+.pagination-container :deep(.el-select-dropdown__item) {
+  justify-content: center;
+  padding: 0 10px;
+}
+
+/* 通用操作栏样式 */
+.operation-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 通用搜索框样式 */
+.search-input {
+  width: 300px;
+}
+
+/* 通用表格卡片样式 */
+.table-card {
+  margin-bottom: 20px;
+}
+
+/* 通用操作按钮组样式 */
+.operation-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* 通用对话框底部样式 */
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 20px;
+} 
+
+/* 使用新的forced-colors标准替换-ms-high-contrast */
+@media (forced-colors: active) {
+  /* 确保在高对比度模式下元素仍然可见 */
+  .el-button {
+    forced-color-adjust: none;
+  }
+  
+  .el-table {
+    forced-color-adjust: none;
+  }
+  
+  .el-input {
+    forced-color-adjust: none;
+  }
+  
+  .el-select {
+    forced-color-adjust: none;
+  }
+  
+  /* 其他需要在高对比度模式下保持样式的元素 */
+  .highlight {
+    forced-color-adjust: none;
+  }
+} 
