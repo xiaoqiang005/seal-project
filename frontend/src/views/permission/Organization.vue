@@ -1,6 +1,6 @@
 <template>
   <div class="page-container">
-    <page-title title="区域管理" />
+    <page-title>区域管理</page-title>
     
     <!-- 搜索栏 -->
     <div class="operation-bar">
