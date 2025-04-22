@@ -1,0 +1,163 @@
+---
+description: 
+globs: **/*
+alwaysApply: false
+---
+---
+description: 项目结构规范
+globs: **/*
+alwaysApply: false
+---
+# 项目结构规范
+
+## 总体项目结构
+
+- 前后端分离架构：
+  - `/frontend` - 前端Vue.js项目
+  - `/backend1` - 后端Django项目
+  - `.cursor-rules` - Cursor IDE规则目录
+  - `.gitignore` - Git忽略文件
+  - `README.md` - 项目说明文档
+
+## 前端项目结构 (Vue.js)
+
+```
+/frontend
+├── public/                 # 静态资源目录
+│   ├── favicon.ico         # 网站图标
+│   └── index.html          # HTML模板
+├── src/                    # 源代码目录
+│   ├── assets/             # 资源文件 (图片、字体等)
+│   │   ├── images/         # 图片资源
+│   │   ├── styles/         # 全局样式文件
+│   │   └── fonts/          # 字体文件
+│   ├── components/         # 通用组件
+│   │   ├── common/         # 跨业务的通用组件
+│   │   └── business/       # 业务相关组件
+│   ├── composables/        # 组合式API函数
+│   ├── router/             # 路由配置
+│   │   ├── index.ts        # 路由主文件
+│   │   └── routes/         # 按模块拆分的路由
+│   ├── store/              # Pinia状态管理
+│   │   ├── index.ts        # Store主文件
+│   │   └── modules/        # 按功能模块拆分的store
+│   ├── views/              # 页面视图组件
+│   │   ├── dashboard/      # 仪表盘相关页面
+│   │   ├── organization/   # 组织管理相关页面
+│   │   └── user/           # 用户相关页面
+│   ├── api/                # API请求封装
+│   │   ├── index.ts        # API主文件和拦截器配置
+│   │   └── modules/        # 按功能模块拆分的API
+│   ├── utils/              # 工具函数
+│   ├── types/              # TypeScript类型定义
+│   ├── constants/          # 常量定义
+│   ├── App.vue             # 根组件
+│   ├── main.ts             # 入口文件
+│   └── shims-vue.d.ts      # Vue的TypeScript类型声明
+├── .env                    # 环境变量
+├── .env.development        # 开发环境变量
+├── .env.production         # 生产环境变量
+├── package.json            # 依赖管理和脚本
+├── tsconfig.json           # TypeScript配置
+└── vite.config.ts          # Vite构建配置
+```
+
+### 前端文件命名约定
+
+- 组件文件：使用 PascalCase，如 `UserProfile.vue`
+- 普通JS/TS文件：使用 camelCase，如 `formUtils.ts`
+- 样式文件：使用 kebab-case，如 `main-theme.scss`
+- 类型定义文件：后缀为 `.d.ts` 或 `.types.ts`
+
+### 前端目录结构原则
+
+- 按功能/模块组织，而非按文件类型
+- 相关的文件应放在一起，保持关联代码的亲近性
+- 共享的组件放在 `components/` 目录
+- 页面级组件放在 `views/` 目录
+- 业务逻辑与UI表现分离
+- 复杂组件可以有自己的子目录
+
+## 后端项目结构 (Django)
+
+```
+/backend1
+├── apps/                     # 应用模块目录
+│   ├── organization/         # 组织管理应用
+│   │   ├── migrations/       # 数据库迁移文件
+│   │   ├── api/              # API相关
+│   │   │   ├── serializers.py # 序列化器
+│   │   │   ├── views.py      # API视图
+│   │   │   └── urls.py       # API路由
+│   │   ├── models.py         # 数据模型
+│   │   ├── admin.py          # 管理站点配置
+│   │   └── tests.py          # 测试文件
+│   ├── user/                 # 用户管理应用
+│   │   └── ...               # 与organization类似的结构
+│   └── common/               # 共享功能应用
+│       └── ...               # 公共模块
+├── config/                   # 项目配置
+│   ├── settings/             # 设置文件
+│   │   ├── base.py           # 基础设置
+│   │   ├── development.py    # 开发环境设置
+│   │   └── production.py     # 生产环境设置
+│   ├── urls.py               # 主URL配置
+│   └── wsgi.py               # WSGI配置
+├── static/                   # 静态文件
+├── templates/                # HTML模板
+├── utils/                    # 工具函数
+├── requirements/             # 依赖管理
+│   ├── base.txt              # 基础依赖
+│   ├── development.txt       # 开发环境依赖
+│   └── production.txt        # 生产环境依赖
+├── manage.py                 # Django命令行工具
+├── .env                      # 环境变量
+└── README.md                 # 文档
+```
+
+### 后端文件命名约定
+
+- Python文件：使用 snake_case，如 `user_service.py`
+- 类名：使用 PascalCase，如 `UserProfile`
+- 函数和变量：使用 snake_case，如 `get_user_data`
+- 常量：使用大写 SNAKE_CASE，如 `DEFAULT_TIMEOUT`
+
+### 后端目录结构原则
+
+- 按功能模块组织应用（apps）
+- 每个应用包含自己的models、views、serializers等
+- 配置文件集中在config目录
+- 按环境区分settings文件
+- 共享代码放在common应用或utils目录
+- 保持每个应用的职责单一
+
+## 数据库结构规范
+
+- 表名：使用小写复数形式，如 `users`、`organizations`
+- 字段名：使用小写snake_case，如 `first_name`
+- 主键：使用 `id` 作为主键名
+- 外键：使用 `<table_name>_id` 格式，如 `organization_id`
+- 时间戳字段：
+  - `created_at`：创建时间
+  - `updated_at`：更新时间
+  - `deleted_at`：软删除时间（若应用）
+- 索引：按查询需求创建，命名为 `idx_<table>_<field1>_<field2>`
+
+## API路径结构规范
+
+- 使用RESTful风格：
+  - `/api/v1/resource` - 资源集合
+  - `/api/v1/resource/{id}` - 特定资源
+- 嵌套关系表示：
+  - `/api/v1/organizations/{id}/members` - 组织的成员
+- 查询参数使用：
+  - 过滤：`?status=active`
+  - 排序：`?sort=created_at`
+  - 分页：`?page=1&limit=10`
+
+## 静态资源组织
+
+- 图片资源：按功能模块分类存储
+- 共享资源：放在common或shared子目录
+- 使用适当的缓存策略
+- 为不同设备提供响应式资源 

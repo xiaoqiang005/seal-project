@@ -1,0 +1,229 @@
+---
+description: 
+globs: **/*.py,**/api/**/*
+alwaysApply: false
+---
+---
+description: API开发规范
+globs: **/*.py **/api/**/*
+alwaysApply: false
+---
+# API开发规范
+
+## 基本原则
+
+- 遵循RESTful设计风格
+- 使用JSON作为默认交换格式
+- 使用标准HTTP方法和状态码
+- 保持API简单一致
+- 适当使用分页和过滤
+- 完善API文档
+
+## API路径结构
+
+- 基础路径：`/api/v1/`
+- 资源集合使用复数名词：`/api/v1/users`
+- 特定资源使用ID：`/api/v1/users/{id}`
+- 子资源表示从属关系：`/api/v1/organizations/{id}/members`
+
+## HTTP方法使用
+
+- `GET`：获取资源，不应有副作用
+- `POST`：创建资源
+- `PUT`：完全替换资源
+- `PATCH`：部分更新资源
+- `DELETE`：删除资源
+
+## 查询参数约定
+
+- 分页：`page`和`page_size`参数
+  ```
+  /api/v1/users?page=1&page_size=10
+  ```
+- 排序：`sort`参数，前缀`-`表示降序
+  ```
+  /api/v1/users?sort=-created_at,name
+  ```
+- 过滤：使用字段名作为参数
+  ```
+  /api/v1/users?status=active&role=admin
+  ```
+- 搜索：`search`参数
+  ```
+  /api/v1/users?search=张三
+  ```
+
+## 请求和响应格式
+
+### 请求体格式
+```json
+{
+  "name": "张三",
+  "email": "zhangsan@example.com",
+  "role": "user"
+}
+```
+
+### 成功响应格式
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "id": 1,
+    "name": "张三",
+    "email": "zhangsan@example.com",
+    "role": "user",
+    "created_at": "2023-01-01T12:00:00Z"
+  }
+}
+```
+
+### 列表响应格式
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "total": 100,
+    "page": 1,
+    "page_size": 10,
+    "items": [
+      {
+        "id": 1,
+        "name": "张三",
+        "email": "zhangsan@example.com"
+      },
+      // ...
+    ]
+  }
+}
+```
+
+### 错误响应格式
+```json
+{
+  "code": 400,
+  "message": "请求参数错误",
+  "errors": [
+    {
+      "field": "email",
+      "message": "无效的邮箱格式"
+    }
+  ]
+}
+```
+
+## 状态码使用
+
+- `200 OK`：请求成功
+- `201 Created`：成功创建资源
+- `204 No Content`：成功处理但无返回内容
+- `400 Bad Request`：请求参数错误
+- `401 Unauthorized`：未认证
+- `403 Forbidden`：无权限
+- `404 Not Found`：资源不存在
+- `409 Conflict`：资源冲突
+- `422 Unprocessable Entity`：业务逻辑错误
+- `500 Internal Server Error`：服务器错误
+
+## 认证与授权
+
+- 使用JWT进行API认证
+- 在请求头中使用`Authorization: Bearer <token>`传递令牌
+- 为不同角色设置适当的权限控制
+- 使用OAuth2.0处理第三方认证
+
+## 版本控制
+
+- 在URL中使用版本号：`/api/v1/`
+- 主要版本变更使用新的版本号（v1, v2）
+- 次要更新在当前版本中向后兼容
+- 适当记录API变更日志
+
+## 安全规范
+
+- 实施请求频率限制防止滥用
+- 所有API流量使用HTTPS加密
+- 敏感数据在日志和错误信息中脱敏
+- 定期安全审计和渗透测试
+- 实施CORS策略控制跨域访问
+
+## API文档
+
+- 使用Swagger/OpenAPI记录所有API
+- 文档应包含：
+  - 端点描述
+  - 请求参数
+  - 响应格式
+  - 身份验证要求
+  - 示例请求和响应
+- 提供在线API文档界面供前端开发参考
+
+## 性能优化
+
+- 适当使用缓存机制
+- 实现数据分页避免大量数据传输
+- 使用恰当的索引优化查询
+- 限制响应字段减少传输数据量
+- 压缩API响应
+- 监控API性能指标
+
+## Django REST Framework实现规范
+
+- 使用ViewSet组织相关API
+- 使用序列化器验证请求数据：
+
+```python
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'is_active']
+        read_only_fields = ['id', 'created_at']
+```
+
+- 使用过滤器实现搜索和过滤功能：
+
+```python
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['username', 'email']
+    ordering_fields = ['username', 'created_at']
+```
+
+- 使用分页器：
+
+```python
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+```
+
+- 使用权限类控制访问：
+
+```python
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.owner == request.user
+```
+
+## 测试规范
+
+- 为每个API端点编写测试
+- 测试成功和失败场景
+- 测试边界条件和异常情况
+- 使用模拟对象测试外部依赖
+- 包含性能和负载测试
+
+## 监控与日志
+
+- 记录API访问日志
+- 监控API响应时间
+- 跟踪错误率和异常
+- 设置适当的告警机制
+- 使用唯一请求ID便于追踪问题 

@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor规则文件索引
+
+通过以下方式在编码过程中使用这些规则：
+
+- `@.cursor general` - 通用开发规范
+- `@.cursor git` - Git提交规范
+- `@.cursor frontend` - 前端开发规范（TypeScript、Vue.js、Element Plus）
+- `@.cursor backend` - 后端开发规范（Python、Django、数据库）
+- `@.cursor api` - API开发规范（Django REST framework）
+- `@.cursor testing-docs` - 测试与文档规范
+- `@.cursor security` - 安全开发规范
+- `@.cursor project-structure` - 项目结构规范
+
+## 项目架构
+- 前后端分离架构
+- 前端：Vue.js（使用Element Plus组件库）
+- 后端：Python Django + Django REST framework
+- 数据库：MySQL（seal数据库）
+
+## 数据库信息
+- 虚拟机地址：192.168.0.115
+- 数据库用户：root
+- 数据库密码：123456
+- 数据库名：seal

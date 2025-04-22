@@ -1,0 +1,109 @@
+---
+description: 
+globs: frontend/**/*.vue,frontend/**/*.ts
+alwaysApply: false
+---
+---
+description: 前端开发规范（TypeScript、Vue.js、Element Plus）
+globs: frontend/**/*.vue frontend/**/*.ts 
+alwaysApply: false
+---
+# 前端开发规则
+
+## TypeScript 规则
+
+- 始终使用显式类型声明，减少 `any` 的使用
+- 利用接口和类型别名定义数据结构
+- 为函数添加参数类型和返回类型
+- 使用泛型提高代码复用性和类型安全性
+- 利用枚举表示一组相关的常量值
+- 使用类型断言仅在确定类型的情况下
+- 利用 TypeScript 编译器严格模式（strict）
+- 尽量避免类型断言和非空断言
+- 使用类型保护进行防御性编程
+- 遵循 ESLint 和 Prettier 规则保持代码一致性
+- 将类型定义放在专门的类型文件中
+- 使用 readonly 修饰符保护不可变数据
+
+## Vue.js 规则
+
+### 组件结构
+- 使用组合式 API 而非选项式 API
+- 保持组件小巧且专注
+- 正确集成 TypeScript
+- 实现适当的 props 验证
+- 使用正确的 emit 声明
+- 保持模板逻辑简洁
+
+### 组合式 API
+- 正确使用 ref 和 reactive
+- 实现适当的生命周期钩子
+- 使用 composables 实现可复用逻辑
+- 保持 setup 函数整洁
+- 正确使用计算属性
+- 实现适当的侦听器
+
+### 状态管理
+- 使用 Pinia 进行状态管理
+- 保持 stores 模块化
+- 使用适当的状态组合
+- 实现适当的 actions
+- 正确使用 getters
+- 适当处理异步状态
+
+### 性能
+- 正确使用组件懒加载
+- 实现适当的缓存
+- 正确使用计算属性
+- 避免不必要的侦听器
+- 正确使用 v-show 与 v-if
+- 实现适当的 key 管理
+
+### 路由
+- 正确使用 Vue Router
+- 实现适当的导航守卫
+- 正确使用路由元字段
+- 适当处理路由参数
+- 实现适当的懒加载
+- 使用适当的导航方法
+
+### 表单
+- 正确使用 v-model
+- 实现适当的验证
+- 适当处理表单提交
+- 显示适当的加载状态
+- 使用适当的错误处理
+- 实现适当的表单重置
+
+## Element Plus UI 规则
+
+- 使用 Element Plus 提供的组件实现一致的 UI 交互
+- 保持界面设计一致性，使用 Element Plus 变量和主题
+- 正确配置表单验证规则
+- 使用 Element Plus 的响应式布局组件
+- 合理使用消息提示、对话框和通知组件
+- 在数据表格中正确实现排序、过滤和分页
+- 优先使用内置图标，保持视觉一致性
+- 使用 Element Plus 的日期选择器处理日期输入
+- 实现适当的加载状态和反馈机制
+- 利用 Element Plus 提供的国际化功能
+
+## 项目结构规范
+
+### 目录结构概要
+- 遵循Vue.js标准项目结构，主要包含：
+  - `/public` - 静态资源目录
+  - `/src` - 源代码目录 
+  - `/src/components` - 组件目录
+  - `/src/views` - 页面视图目录
+  - `/src/api` - API请求封装
+  - `/src/assets` - 静态资源
+  - `/src/router` - 路由配置
+  - `/src/store` - 状态管理
+
+### 命名约定
+- 组件文件：使用PascalCase，如`UserProfile.vue`
+- 普通JS/TS文件：使用camelCase，如`formUtils.ts`
+- 样式文件：使用kebab-case，如`main-theme.scss`
+
+**详细规范请参考：`@.cursor project-structure`** 

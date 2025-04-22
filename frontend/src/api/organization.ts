@@ -1,4 +1,4 @@
-import type { Organization, OrganizationResponse, FormState } from '@/types/organization'
+import type { Organization, OrganizationResponse,  } from '@/types/organization'
 import request from '@/utils/request'
 import type { OrganizationForm } from '@/types/organization'
 

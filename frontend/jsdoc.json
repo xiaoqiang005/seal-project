@@ -1,0 +1,35 @@
+{
+    "source": {
+        "include": ["src"],
+        "includePattern": ".+\\.(js|ts|vue)$",
+        "excludePattern": "(node_modules/|docs)"
+    },
+    "plugins": [
+        "plugins/markdown",
+        "node_modules/jsdoc-vuejs",
+        "node_modules/jsdoc-typescript"
+    ],
+    "opts": {
+        "destination": "./docs",
+        "recurse": true,
+        "template": "node_modules/docdash"
+    },
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": true
+    },
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "typescript": {
+        "moduleRoot": "src",
+        "compilerOptions": {
+            "target": "es2020",
+            "module": "esnext",
+            "moduleResolution": "node",
+            "esModuleInterop": true,
+            "jsx": "preserve"
+        }
+    }
+} 
