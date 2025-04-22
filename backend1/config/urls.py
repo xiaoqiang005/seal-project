@@ -10,15 +10,11 @@ from drf_yasg import openapi
 # Swagger文档配置
 schema_view = get_schema_view(
     openapi.Info(
-        title="Backend API Documentation",
+        title="API Documentation",
         default_version='v1',
-        description="API documentation for the project",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@example.com"),
-        license=openapi.License(name="BSD License"),
+        description="API documentation",
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
 )
 
 urlpatterns = [
