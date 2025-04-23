@@ -30,7 +30,9 @@ export function updateOrganization(id: number, data: OrganizationForm) {
 
 // 删除组织
 export function deleteOrganization(id: number) {
-  return request.delete<void>(`/organizations/${id}/`)
+  return request.delete<{cache_refreshed: boolean, id: number, success: boolean}>(`/organizations/${id}/`, {
+    skipErrorHandler: true  // 自行处理错误，避免默认错误处理
+  })
 }
 
 // 获取组织架构详情

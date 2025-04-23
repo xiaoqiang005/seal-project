@@ -13,7 +13,7 @@ def generate_hierarchical_index(obj):
         
     Note:
         使用缓存优化性能,缓存key格式为 org_index_{id}
-        缓存时间设置为1小时
+        缓存时间设置为较短时间，防止缓存不一致问题
     """
     cache_key = f'org_index_{obj.id}'
     cached_index = cache.get(cache_key)
@@ -46,8 +46,8 @@ def generate_hierarchical_index(obj):
             current = org_dict.get(current.parent.id) if current.parent else None
             
         result = '.'.join(indices)
-        # 缓存结果
-        cache.set(cache_key, result, 3600)  # 缓存1小时
+        # 缓存结果 - 修改为较短的缓存时间
+        cache.set(cache_key, result, 300)  # 缓存5分钟，而不是原来的1小时
         return result
     except Exception as e:
         print(f"生成层级索引时出错: {str(e)}")
@@ -174,7 +174,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
         """获取子节点
         
         使用select_related优化查询
-        使用缓存减少重复查询
+        使用短期缓存减少重复查询
         """
         cache_key = f'org_children_{obj.id}'
         cached_children = cache.get(cache_key)
@@ -188,7 +188,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
         ).order_by('sort_order', 'code', 'created_at')
         
         result = OrganizationListSerializer(children, many=True).data
-        cache.set(cache_key, result, 3600)  # 缓存1小时
+        # 减少缓存时间，提高数据更新的及时性
+        cache.set(cache_key, result, 60)  # 缓存60秒，而不是原来的1小时
         return result
 
     def get_hierarchical_index(self, obj):
