@@ -70,4 +70,10 @@ media
 
 # 编译后的前端文件
 /frontend/dist/
-/frontend/.cache/ 
+/frontend/.cache/
+
+# 数据库相关
+*.sqlite3
+*.log
+my.cnf          # MySQL配置文件
+.env.mysql      # MySQL环境变量文件 
