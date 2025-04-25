@@ -16,6 +16,10 @@ export const router = createRouter({
           component: Home
         },
         {
+          path: 'home',
+          redirect: '/'
+        },
+        {
           path: 'business',
           name: 'business',
           component: () => import('../views/business/BusinessLayout.vue'),

@@ -1,0 +1,57 @@
+/* 替换 -ms-high-contrast 的新标准 */
+@media (forced-colors: active) {
+  /* 基础样式 */
+  :root {
+    --el-color-primary: CanvasText;
+    --el-color-success: CanvasText;
+    --el-color-warning: CanvasText;
+    --el-color-danger: CanvasText;
+    --el-color-info: CanvasText;
+    --el-border-color: ButtonBorder;
+    --el-bg-color: Canvas;
+    --el-text-color-primary: CanvasText;
+  }
+
+  /* 按钮样式 */
+  .el-button {
+    forced-color-adjust: none;
+    border: 1px solid ButtonBorder;
+    background-color: ButtonFace;
+    color: ButtonText;
+  }
+
+  .el-button:hover {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  /* 输入框样式 */
+  .el-input__wrapper {
+    forced-color-adjust: none;
+    border: 1px solid ButtonBorder;
+    background-color: Field;
+    color: FieldText;
+  }
+
+  /* 链接样式 */
+  a {
+    color: LinkText;
+  }
+
+  a:hover {
+    color: Highlight;
+  }
+
+  /* 图标样式 */
+  .el-icon {
+    forced-color-adjust: none;
+    color: ButtonText;
+  }
+
+  /* 禁用状态 */
+  .el-button.is-disabled,
+  .el-input.is-disabled .el-input__wrapper {
+    opacity: 0.5;
+    background-color: GrayText;
+  }
+} 

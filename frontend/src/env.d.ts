@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="element-plus/global" />
 
 // 环境变量类型声明
 interface ImportMetaEnv {
@@ -18,14 +19,13 @@ declare module '*.vue' {
   export default component
 }
 
-declare module 'vue'
-declare module 'vue-router'
-declare module 'element-plus'
 declare module '@element-plus/icons-vue' {
   import type { Component } from 'vue'
-  const Search: Component
-  const Folder: Component
-  const FolderOpened: Component
-  const Document: Component
-  export { Search, Folder, FolderOpened, Document }
+  export const User: Component
+  export const Lock: Component
+  export const Search: Component
+  export const Folder: Component
+  export const FolderOpened: Component
+  export const Document: Component
+  // ... 其他图标
 } 

@@ -1,26 +1,24 @@
 module.exports = {
-  preset: '@vue/cli-plugin-typescript/preset',
-  moduleFileExtensions: ['js', 'jsx', 'json', 'vue', 'ts', 'tsx'],
+  testEnvironment: 'jsdom',
   transform: {
     '^.+\\.vue$': '@vue/vue3-jest',
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-    '^.+\\.(js|jsx)$': 'babel-jest'
+    '^.+\\.(ts|tsx|js|jsx)$': 'ts-jest'
   },
+  moduleFileExtensions: ['vue', 'js', 'json', 'jsx', 'ts', 'tsx', 'node'],
+  testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
-  testMatch: [
-    '**/tests/unit/**/*.spec.[jt]s?(x)',
-    '**/__tests__/*.[jt]s?(x)'
-  ],
-  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'node-addons']
+  },
   collectCoverage: true,
   collectCoverageFrom: [
-    'src/**/*.{js,vue,ts}',
+    'src/**/*.{js,ts,vue}',
     '!src/main.ts',
     '!src/router/index.ts',
     '!**/node_modules/**'
   ],
-  coverageReporters: ['text', 'lcov', 'html'],
-  coverageDirectory: 'coverage'
+  coverageReporters: ['text', 'lcov', 'clover']
 } 
