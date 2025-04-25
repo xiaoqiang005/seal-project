@@ -484,8 +484,12 @@ const handleAdd = () => {
           type: 'warning'
         })
         
+        console.log('开始删除组织ID:', row.id)
+        
         // 调用删除API
-        await organizationApi.deleteOrganization(row.id)
+        const response = await organizationApi.deleteOrganization(row.id)
+        
+        console.log('删除组织API响应:', response)
         
         // 重新获取组织树
         await fetchOrganizationTree()
@@ -494,6 +498,15 @@ const handleAdd = () => {
       } catch (error: any) {
         if (error !== 'cancel') {
           console.error('删除失败:', error)
+          // 添加更详细的错误日志
+          console.error('错误详情:', {
+            message: error.message,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            config: error.config
+          })
+          
           ElMessage.error(error.response?.data?.detail || '删除失败')
         }
       }

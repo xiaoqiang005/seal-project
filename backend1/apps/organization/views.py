@@ -9,6 +9,7 @@ from .models import Organization
 from .serializers import OrganizationSerializer
 from .permissions import OrganizationPermission
 from .filters import OrganizationFilter
+from django.core.cache import cache
 
 class OrganizationViewSet(viewsets.ModelViewSet):
     """区域管理视图集
@@ -82,6 +83,22 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     def tree(self, request):
         """获取组织机构树形结构"""
         search_key = request.query_params.get('search', '')
+        # 添加强制刷新参数，用于清除缓存
+        force_refresh = request.query_params.get('force_refresh', 'false').lower() == 'true'
+        
+        # 使用缓存存储树形结构，减少数据库查询
+        cache_key = 'organization_tree_cache'
+        if search_key:
+            cache_key = f'{cache_key}_{search_key}'
+        
+        # 缓存参数
+        cache_timeout = 60  # 60秒，与settings中的开发环境缓存时间保持一致
+            
+        # 如果不强制刷新则尝试从缓存获取
+        if not force_refresh:
+            cached_tree = cache.get(cache_key)
+            if cached_tree is not None:
+                return Response(cached_tree)
         
         # 定义层级顺序
         level_order = {
@@ -119,24 +136,43 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         # 优化查询，减少数据库访问
         queryset = queryset.select_related('parent')
         
-        def build_tree(parent=None):
-            # 获取当前层级的节点
-            nodes = [node for node in queryset if node.parent_id == (parent.id if parent else None)]
-            # 按行政级别和编码排序
-            nodes.sort(key=lambda x: (level_order.get(x.level, 5), x.code))
-            
-            result = []
-            for node in nodes:
-                node_data = self.get_serializer(node).data
-                children = build_tree(node)
-                if children:
-                    node_data['children'] = children
-                result.append(node_data)
-            return result
+        # 把所有组织按树形结构返回
+        roots = []
+        org_dict = {}
         
+        # 构建字典，便于快速查找
+        for org in queryset:
+            data = self.serializer_class(org, context={'request': request}).data
+            data['children'] = []
+            org_dict[org.id] = data
+            
         # 构建树形结构
-        tree_data = build_tree(None)
-        return Response(tree_data)
+        for org_id, org_data in org_dict.items():
+            if org_data.get('parent') and org_data['parent'] in org_dict:
+                org_dict[org_data['parent']]['children'].append(org_data)
+            else:
+                roots.append(org_data)
+                
+        # 按层级排序
+        def sort_by_level(item):
+            return level_order.get(item.get('level', ''), 999)
+            
+        # 递归排序所有节点
+        def sort_node(node):
+            if node.get('children'):
+                node['children'] = sorted(node['children'], key=sort_by_level)
+                for child in node['children']:
+                    sort_node(child)
+                    
+        # 排序根节点
+        roots = sorted(roots, key=sort_by_level)
+        for root in roots:
+            sort_node(root)
+        
+        # 缓存处理结果，减少后续查询
+        cache.set(cache_key, roots, cache_timeout)
+        
+        return Response(roots)
 
     def create(self, request, *args, **kwargs):
         """创建区域
@@ -221,9 +257,16 @@ class OrganizationViewSet(viewsets.ModelViewSet):
                 serializer = self.get_serializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
                 self.perform_create(serializer)
+                
+                # 创建成功后清除组织树缓存，确保前端能立即看到新数据
+                self._clear_tree_cache()
+                
                 headers = self.get_success_headers(serializer.data)
                 return Response(
-                    serializer.data,
+                    {
+                        **serializer.data,
+                        'cache_refreshed': True  # 添加缓存刷新标志
+                    },
                     status=status.HTTP_201_CREATED,
                     headers=headers
                 )
@@ -305,7 +348,21 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
             
-            return Response(serializer.data)
+            # 更新成功后清除相关缓存
+            instance_id = instance.id
+            # 清除该记录的缓存
+            cache_key = f'org_index_{instance_id}'
+            cache.delete(cache_key)
+            
+            # 清除组织树缓存
+            self._clear_tree_cache()
+            
+            print(f"已成功更新组织ID: {instance_id} 并清除相关缓存")
+            
+            return Response({
+                **serializer.data,
+                'cache_refreshed': True  # 添加缓存刷新标志
+            })
             
         except Exception as e:
             return Response(
@@ -341,4 +398,55 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             return Response(
                 {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
-            ) 
+            )
+
+    def destroy(self, request, *args, **kwargs):
+        """删除组织记录并清除缓存
+        
+        重写删除方法，在成功删除记录后清除相关缓存
+        """
+        try:
+            instance = self.get_object()
+            instance_id = instance.id
+            
+            # 执行删除操作前先保存需要的信息
+            response_data = {'cache_refreshed': True, 'id': instance_id, 'success': True}
+            
+            # 执行删除操作
+            self.perform_destroy(instance)
+            
+            # 清除该记录的缓存
+            cache_key = f'org_index_{instance_id}'
+            cache.delete(cache_key)
+            
+            # 清除组织树缓存
+            self._clear_tree_cache()
+            
+            print(f"已成功删除组织ID: {instance_id} 并清除相关缓存")
+            
+            # 返回200而不是204，因为我们有响应内容
+            return Response(response_data, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            print(f"删除组织时发生错误: {str(e)}")
+            return Response(
+                {'detail': str(e), 'success': False},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def _clear_tree_cache(self):
+        """清除所有组织树相关的缓存
+        
+        包括主树缓存和各种搜索条件下的缓存
+        """
+        # 清除默认的树缓存
+        cache.delete('organization_tree_cache')
+        
+        # 对于搜索条件缓存，我们可以设置一个通用的前缀并使用通配符删除
+        # 但大多数缓存后端不支持通配符删除，所以这里列出常见搜索关键词删除
+        common_search_terms = ['省', '市', '区', '县']
+        for term in common_search_terms:
+            cache.delete(f'organization_tree_cache_{term}')
+        
+        # 记录日志
+        print(f"已清除组织树相关缓存") 
